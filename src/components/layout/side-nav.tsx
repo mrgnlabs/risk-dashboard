@@ -3,8 +3,8 @@ import Link from "next/link";
 
 import { type NavItem } from "~/types";
 import { usePathname } from "next/navigation";
-import { cn } from "~/utils/themeUtils";
-import { useSidebar } from "~/hooks/useSidebar";
+import { cn } from "~/utils/theme-utils";
+import { useSidebar } from "~/hooks/use-sidebar";
 import { buttonVariants } from "~/components/ui/button";
 
 import {
@@ -35,6 +35,7 @@ export function SideNav({ items, setOpen, className }: SideNavProps) {
       setLastOpenItem(openItem);
       setOpenItem("");
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
 
   return (

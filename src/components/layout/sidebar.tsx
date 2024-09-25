@@ -3,8 +3,8 @@ import React, { useState } from "react";
 import { SideNav } from "~/components/layout/side-nav";
 import { NavItems } from "~/constants/side-nav";
 
-import { cn } from "~/utils/themeUtils";
-import { useSidebar } from "~/hooks/useSidebar";
+import { cn } from "~/utils/theme-utils";
+import { useSidebar } from "~/hooks/use-sidebar";
 import { IconArrowLeft } from "~/components/ui/icons";
 
 interface SidebarProps {

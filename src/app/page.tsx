@@ -1,3 +1,5 @@
+import { Summary } from "~/components/common/summary/summary";
+
 export default function Home() {
-  return <div>general page</div>;
+  return <Summary />;
 }

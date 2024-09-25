@@ -156,7 +156,13 @@ module.exports = {
     },
   },
   plugins: [
-    plugin(function ({ addUtilities }) {
+    plugin(function ({
+      addUtilities,
+    }: {
+      addUtilities: (arg0: {
+        ".invisible-scroll": { "content-visibility": string };
+      }) => void;
+    }) {
       addUtilities({
         ".invisible-scroll": {
           "content-visibility": "auto",

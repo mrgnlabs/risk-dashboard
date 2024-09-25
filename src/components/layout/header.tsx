@@ -1,5 +1,5 @@
 "use client";
-import { cn } from "~/utils/themeUtils";
+import { cn } from "~/utils/theme-utils";
 import { MobileSidebar } from "~/components/layout/mobile-sidebar";
 import Link from "next/link";
 import { IconMrgn } from "~/components/ui/icons";
@@ -12,8 +12,8 @@ export default function Header() {
           href={"/"}
           className="hidden items-center justify-between gap-3 md:flex"
         >
-          <IconMrgn size={25} />
-          <h1 className="text-xl font-semibold">Marginfi Risk Dashboard</h1>
+          <IconMrgn size={35} />
+          <h1 className="text-xl font-semibold">marginfi risk dashboard</h1>
         </Link>
         <div className={cn("block md:!hidden")}>
           <MobileSidebar />
