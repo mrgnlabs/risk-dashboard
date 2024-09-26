@@ -11,6 +11,15 @@ const nextConfig = {
     return config;
   },
   reactStrictMode: false,
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "storage.googleapis.com",
+        pathname: "/mrgn-public/mrgn-token-icons/**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

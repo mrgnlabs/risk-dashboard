@@ -20,7 +20,7 @@ export const Summary = () => {
   >(undefined);
   const { fetchMrgnClient, mrgnClient } = useMrgnStore();
 
-  const getBanks = async (client: MarginfiClient) => {
+  const computeBankTotals = async (client: MarginfiClient) => {
     const banksArray = Array.from(client.banks.values());
     setCollateralBanksValues(
       calculateTotals(
@@ -46,7 +46,7 @@ export const Summary = () => {
   }, []);
 
   React.useEffect(() => {
-    if (mrgnClient) getBanks(mrgnClient);
+    if (mrgnClient) computeBankTotals(mrgnClient);
   }, [mrgnClient]);
 
   return (

@@ -11,10 +11,11 @@ export const PoolSummary = ({ poolName, poolData }: PoolSummaryProps) => {
     <div className="flex flex-col w-full px-2 sm:px-0 gap-2 items-start justify-center">
       <h2 className="text-2xl font-medium">{poolName}</h2>
       <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <PoolItem
+        {/* <PoolItem
           poolName={"Total number of loans"}
           poolNumber={poolData?.totalLoans}
-        />
+        /> */}
+        {/* TODO: compute total number of loans once cached in the api */}
         <PoolItem
           poolName={"Total deposits (USD)"}
           poolNumber={poolData?.totalDeposits}
@@ -40,7 +41,7 @@ const PoolItem = ({ poolName, poolNumber }: PoolItemProps) => {
   }
 
   return (
-    <div className="flex flex-col items-start justify-center w-full h-16">
+    <div className="flex flex-col items-start justify-center w-full h-16 gap-1">
       <h3 className="text-md sm:text-l font-medium overflow-hidden text-ellipsis whitespace-nowrap w-full">
         {poolName}
       </h3>
@@ -53,7 +54,7 @@ const PoolItem = ({ poolName, poolNumber }: PoolItemProps) => {
 
 const LoadingItem = ({ poolName }: { poolName: string }) => {
   return (
-    <div className="flex flex-col items-start justify-center w-full h-16">
+    <div className="flex flex-col items-start justify-center w-full h-16 gap-1">
       <h3 className="text-md sm:text-l font-medium overflow-hidden text-ellipsis whitespace-nowrap w-full">
         {poolName}
       </h3>

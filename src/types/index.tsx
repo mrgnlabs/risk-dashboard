@@ -10,3 +10,5 @@ export interface NavItem {
 }
 
 export type UIPoolType = "All pools" | "Global pools" | "Isolated pools";
+
+export type UIRiskModelType = "All" | "Buy" | "Sell";
