@@ -6,9 +6,17 @@ import {
   TableRow,
   TableCell,
 } from "~/components/ui/table";
-import { dataType } from "../risk-model";
 import Image from "next/image";
-import { tokenPriceFormatter } from "@mrgnlabs/mrgn-common";
+import { tokenPriceFormatter, numeralFormatter } from "@mrgnlabs/mrgn-common";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "~/components/ui/tooltip";
+import { IconInfoCircle } from "~/components/ui/icons";
+import React from "react";
+import { dataType } from "~/types";
 
 interface TableComponentProps {
   data: dataType[];
@@ -16,60 +24,108 @@ interface TableComponentProps {
 
 export const TableComponent = ({ data }: TableComponentProps) => {
   return (
-    <Table className="my-4">
-      <TableHeader>
-        <TableRow>
-          <TableHead>Health</TableHead>
-          <TableHead>Buy/Sell</TableHead>
-          <TableHead>Token</TableHead>
-          <TableHead>Token Symbol</TableHead>
-          <TableHead>Price</TableHead>
-          <TableHead>Liquidator Capacity</TableHead>
-          <TableHead>Current Bank Limit</TableHead>
-          <TableHead>Daily Displaced</TableHead>
-          <TableHead>Target</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {data.map((row, index) => {
-          return (
-            <TableRow key={index}>
+    <div className="h-[75vh] relative overflow-auto">
+      <Table className="h-fit max-h-80 overflow-y-auto relative">
+        <TableHeader className="sticky top-0 bg-black">
+          <TableRow>
+            <TableHead>Health</TableHead>
+            <TableHead>Buy/Sell</TableHead>
+            <TableHead>Token</TableHead>
+            <TableHead>Token Symbol</TableHead>
+            <TableHead>Price</TableHead>
+            <TableHead>Liquidator Capacity</TableHead>
+            <TableHead>Current Bank Limit</TableHead>
+            <TableHead>Daily Displaced</TableHead>
+            <TableHead>Target</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody className="overflow-y-auto max-h-[500px]">
+          {data.length > 0 ? (
+            data.map((row, index) => (
+              <TableRow key={index}>
+                <TableCell>
+                  {row.health.isHealthy ? (
+                    <span className="text-green-600">Healthy</span>
+                  ) : (
+                    <div className="flex items-center gap-1 text-red-600">
+                      Unhealthy
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <IconInfoCircle
+                              className="text-gray-600"
+                              size={14}
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{row.health.statusMessage}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                  )}
+                </TableCell>
+                <TableCell>
+                  {row.type === "Buy" ? (
+                    <span className="text-green-600">Buy</span>
+                  ) : (
+                    <span className="text-red-600">Sell</span>
+                  )}
+                </TableCell>
+                <TableCell>
+                  <Image src={row.tokenImage} alt={""} width={24} height={24} />
+                </TableCell>
+                <TableCell>{row.tokenSymbol}</TableCell>
+                <TableCell>
+                  {tokenPriceFormatter(
+                    row.price?.priceRealtime?.price?.toNumber()!
+                  )}
+                </TableCell>
+                <TableCell>
+                  {numeralFormatter(Number(row.liquidatorCapacity))}
+                </TableCell>
+                <TableCell>
+                  {numeralFormatter(Number(row.currentBankLimit))}
+                </TableCell>
+                <TableCell>
+                  {numeralFormatter(Number(row.dailyDisplaced))}
+                </TableCell>
+                <TableCell>{numeralFormatter(Number(row.target))}</TableCell>
+              </TableRow>
+            ))
+          ) : (
+            <TableRow>
               <TableCell>
-                {row.health.isHealthy ? (
-                  <span className="text-green-600">Healthy</span>
-                ) : (
-                  <span className="text-red-600">Unhealthy</span>
-                )}
-                {/* TODO: add indicators */}
+                <div className="h-4 bg-muted rounded-md animate-pulse w-24	"></div>
               </TableCell>
               <TableCell>
-                {row.type === "Buy" ? (
-                  <span className="text-green-600">Buy</span>
-                ) : (
-                  <span className="text-red-600">Sell</span>
-                )}
+                <div className="h-4 bg-muted rounded-md animate-pulse w-20"></div>
               </TableCell>
               <TableCell>
-                <Image src={row.tokenImage} alt={""} width={24} height={24} />{" "}
-              </TableCell>
-              <TableCell>{row.tokenSymbol}</TableCell>
-              <TableCell>
-                {tokenPriceFormatter(
-                  row.price?.priceRealtime?.price?.toNumber()!
-                )}
+                <div className="h-4 bg-muted rounded-md animate-pulse w-16"></div>
               </TableCell>
               <TableCell>
-                {Number(row.liquidatorCapacity)?.toFixed(2)}
+                <div className="h-4 bg-muted rounded-md animate-pulse w-24"></div>
               </TableCell>
-              <TableCell>{Number(row.currentBankLimit)?.toFixed(2)}</TableCell>
-              <TableCell>{Number(row.dailyDisplaced)?.toFixed(2)}</TableCell>
-              <TableCell>{Number(row.target)?.toFixed(2)}</TableCell>
+              <TableCell>
+                <div className="h-4 bg-muted rounded-md animate-pulse w-24"></div>
+              </TableCell>
+              <TableCell>
+                <div className="h-4 bg-muted rounded-md animate-pulse w-24"></div>
+              </TableCell>
+              <TableCell>
+                <div className="h-4 bg-muted rounded-md animate-pulse w-24"></div>
+              </TableCell>
+              <TableCell>
+                <div className="h-4 bg-muted rounded-md animate-pulse w-24"></div>
+              </TableCell>
+              <TableCell>
+                <div className="h-4 bg-muted rounded-md animate-pulse w-24"></div>
+              </TableCell>
             </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+          )}
+        </TableBody>
+      </Table>
+    </div>
   );
 };
-
-// TODO: add indicators, format numbers, add sorting

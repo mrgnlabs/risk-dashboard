@@ -1,6 +1,7 @@
 "use client";
 import { Separator } from "~/components/ui/separator";
 import * as summaryComponents from "./components";
+import * as globalComponents from "~/components/common/global-components";
 import React from "react";
 import { MarginfiClient } from "@mrgnlabs/marginfi-client-v2";
 import { BankSummaryValues } from "~/constants/interfaces";
@@ -53,9 +54,12 @@ export const Summary = () => {
     <div className="flex flex-col items-center w-full p-2 sm:py-4 sm:px-6 gap-3">
       <div className="flex justify-between items-center w-full gap-2 ">
         <h1 className="text-4xl font-medium">Summary</h1>
-        <summaryComponents.FilterComponent
-          setSelectedPool={setSelectedPool}
-          selectedPool={selectedPool}
+        <globalComponents.FilterComponent
+          setSelectedFilter={
+            setSelectedPool as React.Dispatch<React.SetStateAction<string>>
+          }
+          selectedFilter={selectedPool}
+          items={["All pools", "Global pools", "Isolated pools"]}
         />
       </div>
       <Separator />

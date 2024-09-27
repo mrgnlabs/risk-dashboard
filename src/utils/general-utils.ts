@@ -1,10 +1,7 @@
 import { nativeToUi } from "@mrgnlabs/mrgn-common";
 import { Bank, MarginfiClient } from "@mrgnlabs/marginfi-client-v2";
 import { BankSummaryValues } from "~/constants/interfaces";
-
-const formatNumber = (number: number | string): string => {
-  return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-};
+import { HealthCheckResult, RiskModelData } from "~/types";
 
 const calculateTotals = (
   banks: Bank[],
@@ -35,8 +32,39 @@ const calculateTotals = (
     totalTvl: Math.round(totalTvl * 100) / 100,
     totalDeposits: Math.round(totalDeposits * 100) / 100,
     totalBorrows: Math.round(totalBorrows * 100) / 100,
-    totalLoans: 0, // TODO: fix
+    totalLoans: 0, // TODO: compute total number of loans once cached in the api
   };
 };
 
-export { formatNumber, calculateTotals };
+const calculateRiskModelHealthFactor = (
+  data: RiskModelData
+): HealthCheckResult => {
+  const liquidatorCapacity = parseFloat(data.liquidatorCapacity);
+  const dailyDisplaced = parseFloat(data.dailyDisplaced);
+
+  const healthFactor = liquidatorCapacity - dailyDisplaced;
+  const isHealthy = liquidatorCapacity > dailyDisplaced;
+  const statusMessage = isHealthy
+    ? "The bank is healthy with sufficient liquidity."
+    : "The bank is at risk due to insufficient liquidator capacity.";
+
+  return {
+    isHealthy,
+    healthFactor,
+    statusMessage,
+  };
+};
+
+const parseCSVToObject = (csvText: string) => {
+  const rows = csvText.trim().split("\n");
+  const headers = rows[0].split(",");
+  const dataRow = rows[1].split(",");
+
+  const parsedObject = Object.fromEntries(
+    headers.map((header, index) => [header, dataRow[index] || ""])
+  ) as Record<string, string>;
+
+  return parsedObject;
+};
+
+export { calculateTotals, calculateRiskModelHealthFactor, parseCSVToObject };

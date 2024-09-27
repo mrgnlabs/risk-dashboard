@@ -1,5 +1,5 @@
+import { numeralFormatter } from "@mrgnlabs/mrgn-common";
 import { BankSummaryValues } from "~/constants/interfaces";
-import { formatNumber } from "~/utils/general-utils";
 
 interface PoolSummaryProps {
   poolName: string;
@@ -46,7 +46,7 @@ const PoolItem = ({ poolName, poolNumber }: PoolItemProps) => {
         {poolName}
       </h3>
       <h1 className="text-xl sm:text-2xl font-medium overflow-hidden text-ellipsis whitespace-nowrap w-full">
-        {formatNumber(poolNumber)}
+        {numeralFormatter(poolNumber)}
       </h1>
     </div>
   );

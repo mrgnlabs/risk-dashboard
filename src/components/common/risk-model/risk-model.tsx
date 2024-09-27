@@ -1,68 +1,15 @@
 "use client";
 import React, { useEffect } from "react";
 import * as riskModelComponents from "./components";
-import { UIRiskModelType } from "~/types";
+import { dataType, UIRiskModelType } from "~/types";
 import { useMrgnStore } from "~/stores";
 import { Connection } from "@solana/web3.js";
+import { Bank, MarginfiClient } from "@mrgnlabs/marginfi-client-v2";
+import * as globalComponents from "~/components/common/global-components";
 import {
-  Bank,
-  MarginfiClient,
-  OraclePrice,
-} from "@mrgnlabs/marginfi-client-v2";
-
-export type dataType = {
-  health: HealthCheckResult;
-  type: string;
-  tokenImage: string;
-  tokenSymbol: string | null;
-  price: OraclePrice | null;
-  liquidatorCapacity: string | null;
-  currentBankLimit: string | null;
-  dailyDisplaced: string | null;
-  target: string | null;
-}; // TODO: move
-
-const parseCSVToObject = (csvText: string) => {
-  const rows = csvText.trim().split("\n");
-  const headers = rows[0].split(",");
-  const dataRow = rows[1].split(",");
-
-  const parsedObject = Object.fromEntries(
-    headers.map((header, index) => [header, dataRow[index] || ""])
-  ) as Record<string, string>;
-
-  return parsedObject;
-}; // TODO: move
-
-type HealthCheckResult = {
-  isHealthy: boolean;
-  healthFactor: number;
-  statusMessage: string;
-}; // TODO: move
-
-type RiskModelData = {
-  liquidatorCapacity: string;
-  dailyDisplaced: string;
-}; // TODO: move
-
-const calculateRiskModelHealthFactor = (
-  data: RiskModelData
-): HealthCheckResult => {
-  const liquidatorCapacity = parseFloat(data.liquidatorCapacity);
-  const dailyDisplaced = parseFloat(data.dailyDisplaced);
-
-  const healthFactor = liquidatorCapacity - dailyDisplaced;
-  const isHealthy = liquidatorCapacity > dailyDisplaced;
-  const statusMessage = isHealthy
-    ? "The bank is healthy with sufficient liquidity."
-    : "The bank is at risk due to insufficient liquidator capacity.";
-
-  return {
-    isHealthy,
-    healthFactor,
-    statusMessage,
-  };
-}; // TODO: move
+  calculateRiskModelHealthFactor,
+  parseCSVToObject,
+} from "~/utils/general-utils";
 
 export const RiskModel = () => {
   const [searchValue, setSearchValue] = React.useState<string | undefined>();
@@ -161,7 +108,7 @@ export const RiskModel = () => {
     );
 
     await Promise.all(fetchPromises);
-  }; // TOOD: split, add fetched data to store, and move to utils or hooks
+  };
 
   React.useEffect(() => {
     if (!mrgnClient) {
@@ -172,7 +119,7 @@ export const RiskModel = () => {
       fetchMrgnClient({ connection });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // TOOD: move to one place, its repeated in both components right now
+  }, []);
 
   React.useEffect(() => {
     if (mrgnClient) fetchData(mrgnClient);
@@ -201,13 +148,17 @@ export const RiskModel = () => {
   return (
     <div className="w-full p-3 sm:p-6 flex flex-col gap-4">
       <div className="flex justify-between ">
-        <riskModelComponents.SearchComponent
+        <globalComponents.SearchComponent
+          placeHolder="Search by token symbol"
           value={searchValue}
           setValue={setSearchValue}
         />
-        <riskModelComponents.FilterComponent
+        <globalComponents.FilterComponent
           selectedFilter={filterValue}
-          setSelectedFilter={setFilterValue}
+          setSelectedFilter={
+            setFilterValue as React.Dispatch<React.SetStateAction<string>>
+          }
+          items={["All", "Buy", "Sell"]}
         />
       </div>
       <riskModelComponents.TableComponent

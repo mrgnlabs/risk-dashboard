@@ -1,4 +1,9 @@
-import { IconX, IconArrowLeft } from "@tabler/icons-react";
+import {
+  IconX,
+  IconArrowLeft,
+  IconInfoCircleFilled,
+  IconInfoCircle,
+} from "@tabler/icons-react";
 
 export type IconProps = {
   size?: number;
@@ -18,4 +23,4 @@ const IconMrgn = ({ size = 24, className }: IconProps) => (
   </svg>
 );
 
-export { IconX, IconArrowLeft, IconMrgn };
+export { IconX, IconArrowLeft, IconMrgn, IconInfoCircleFilled, IconInfoCircle };
