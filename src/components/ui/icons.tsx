@@ -3,7 +3,10 @@ import {
   IconArrowLeft,
   IconInfoCircleFilled,
   IconInfoCircle,
+  IconExclamationCircle,
+  IconLoader2,
 } from "@tabler/icons-react";
+import { cn } from "~/utils/theme-utils";
 
 export type IconProps = {
   size?: number;
@@ -23,4 +26,16 @@ const IconMrgn = ({ size = 24, className }: IconProps) => (
   </svg>
 );
 
-export { IconX, IconArrowLeft, IconMrgn, IconInfoCircleFilled, IconInfoCircle };
+const IconLoader = ({ size = 24, className }: IconProps) => (
+  <IconLoader2 size={size} className={cn("animate-spin", className)} />
+);
+
+export {
+  IconX,
+  IconArrowLeft,
+  IconMrgn,
+  IconInfoCircleFilled,
+  IconInfoCircle,
+  IconExclamationCircle,
+  IconLoader,
+};

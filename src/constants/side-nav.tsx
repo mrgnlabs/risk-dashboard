@@ -1,4 +1,4 @@
-import { BookOpenCheck, LayoutDashboard } from "lucide-react";
+import { BookOpenCheck, LayoutDashboard, PrinterCheckIcon } from "lucide-react";
 import { type NavItem } from "~/types";
 
 export const NavItems: NavItem[] = [
@@ -12,6 +12,12 @@ export const NavItems: NavItem[] = [
     title: "Risk model",
     icon: BookOpenCheck,
     href: "/risk-model",
+    color: "text-sky-500",
+  },
+  {
+    title: "Oracles",
+    icon: PrinterCheckIcon,
+    href: "/oracles",
     color: "text-sky-500",
   },
 

@@ -1,5 +1,5 @@
 import { type LucideIcon } from "lucide-react";
-import { OraclePrice } from "@mrgnlabs/marginfi-client-v2";
+import { OraclePrice, Bank } from "@mrgnlabs/marginfi-client-v2";
 
 export interface NavItem {
   title: string;
@@ -14,16 +14,24 @@ export type UIPoolType = "All pools" | "Global pools" | "Isolated pools";
 
 export type UIRiskModelType = "All" | "Buy" | "Sell";
 
-export type dataType = {
+export type healthTableDataType = {
   health: HealthCheckResult;
   type: string;
   tokenImage: string;
   tokenSymbol: string | null;
-  price: OraclePrice | null;
+  oraclePrice: OraclePrice | null;
   liquidatorCapacity: string | null;
   currentBankLimit: string | null;
   dailyDisplaced: string | null;
   target: string | null;
+};
+
+export type oracleData = {
+  oraclePrice: OraclePrice | null;
+  tokenSymbol: string | null;
+  tokenImage: string;
+  tvl: number;
+  isStale: boolean;
 };
 
 export type HealthCheckResult = {

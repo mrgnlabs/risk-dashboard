@@ -1,5 +1,9 @@
 import { nativeToUi } from "@mrgnlabs/mrgn-common";
-import { Bank, MarginfiClient } from "@mrgnlabs/marginfi-client-v2";
+import {
+  Bank,
+  MarginfiClient,
+  OraclePrice,
+} from "@mrgnlabs/marginfi-client-v2";
 import { BankSummaryValues } from "~/constants/interfaces";
 import { HealthCheckResult, RiskModelData } from "~/types";
 
@@ -67,4 +71,22 @@ const parseCSVToObject = (csvText: string) => {
   return parsedObject;
 };
 
-export { calculateTotals, calculateRiskModelHealthFactor, parseCSVToObject };
+function isBankOracleStale(bank: Bank, oraclePrice: OraclePrice) {
+  const maxAge = bank.config.oracleMaxAge;
+  const currentTime = Math.round(Date.now() / 1000);
+  const oracleTime = Math.round(
+    oraclePrice.timestamp
+      ? oraclePrice.timestamp.toNumber()
+      : new Date().getTime()
+  );
+  const isStale = currentTime - oracleTime > maxAge;
+
+  return isStale;
+}
+
+export {
+  calculateTotals,
+  calculateRiskModelHealthFactor,
+  parseCSVToObject,
+  isBankOracleStale,
+};

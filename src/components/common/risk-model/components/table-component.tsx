@@ -16,10 +16,10 @@ import {
 } from "~/components/ui/tooltip";
 import { IconInfoCircle } from "~/components/ui/icons";
 import React from "react";
-import { dataType } from "~/types";
+import { healthTableDataType } from "~/types";
 
 interface TableComponentProps {
-  data: dataType[];
+  data: healthTableDataType[];
 }
 
 export const TableComponent = ({ data }: TableComponentProps) => {
@@ -78,7 +78,7 @@ export const TableComponent = ({ data }: TableComponentProps) => {
                 <TableCell>{row.tokenSymbol}</TableCell>
                 <TableCell>
                   {tokenPriceFormatter(
-                    row.price?.priceRealtime?.price?.toNumber()!
+                    row.oraclePrice?.priceRealtime?.price?.toNumber()!
                   )}
                 </TableCell>
                 <TableCell>

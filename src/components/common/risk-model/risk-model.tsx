@@ -1,7 +1,7 @@
 "use client";
-import React, { useEffect } from "react";
+import React from "react";
 import * as riskModelComponents from "./components";
-import { dataType, UIRiskModelType } from "~/types";
+import { healthTableDataType, UIRiskModelType } from "~/types";
 import { useMrgnStore } from "~/stores";
 import { Connection } from "@solana/web3.js";
 import { Bank, MarginfiClient } from "@mrgnlabs/marginfi-client-v2";
@@ -15,9 +15,9 @@ export const RiskModel = () => {
   const [searchValue, setSearchValue] = React.useState<string | undefined>();
   const [filterValue, setFilterValue] = React.useState<UIRiskModelType>("All");
   const { fetchMrgnClient, mrgnClient } = useMrgnStore();
-  const [data, setData] = React.useState<dataType[]>([]);
+  const [data, setData] = React.useState<healthTableDataType[]>([]);
   const [filteredData, setFilteredData] = React.useState<
-    dataType[] | undefined
+    healthTableDataType[] | undefined
   >([]);
 
   const fetchData = async (mrgnClient: MarginfiClient) => {
@@ -25,8 +25,8 @@ export const RiskModel = () => {
 
     const fetchBankData = async (bank: Bank) => {
       const tokenSymbol = bank.tokenSymbol;
-      let buyDataObject: dataType | null = null;
-      let sellDataObject: dataType | null = null;
+      let buyDataObject: healthTableDataType | null = null;
+      let sellDataObject: healthTableDataType | null = null;
       const oraclePricePerBank = mrgnClient.getOraclePriceByBank(bank.address);
 
       try {
@@ -48,7 +48,7 @@ export const RiskModel = () => {
             type: "Buy",
             tokenImage: `https://storage.googleapis.com/mrgn-public/mrgn-token-icons/${bank.tokenSymbol}.png`,
             tokenSymbol: bank.tokenSymbol ?? null,
-            price: oraclePricePerBank,
+            oraclePrice: oraclePricePerBank,
             liquidatorCapacity:
               parsedBuyData.tail_risk_profitability_capacity_native,
             currentBankLimit: bank.config.borrowLimit.toString(),
@@ -81,7 +81,7 @@ export const RiskModel = () => {
             type: "Sell",
             tokenImage: `https://storage.googleapis.com/mrgn-public/mrgn-token-icons/${bank.tokenSymbol}.png`,
             tokenSymbol: bank.tokenSymbol ?? null,
-            price: oraclePricePerBank,
+            oraclePrice: oraclePricePerBank,
             liquidatorCapacity:
               parsedSellData.tail_risk_profitability_capacity_native,
             currentBankLimit: bank.config.depositLimit.toString(),
@@ -125,7 +125,7 @@ export const RiskModel = () => {
     if (mrgnClient) fetchData(mrgnClient);
   }, [mrgnClient]);
 
-  useEffect(() => {
+  React.useEffect(() => {
     let _data = filteredData ?? data;
     if (filterValue === "All") {
       _data = data;

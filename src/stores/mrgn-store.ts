@@ -8,6 +8,7 @@ interface MrgnState {
 
   // Actions
   fetchMrgnClient: (args: { connection: Connection }) => void;
+  refetchMrgnClient: (args: { connection: Connection }) => void;
 }
 
 function createMrgnStore() {
@@ -20,6 +21,16 @@ const stateCreator: StateCreator<MrgnState, [], []> = (set, get) => ({
 
   // Actions
   fetchMrgnClient: async (args) => {
+    const mrgnClient = await MarginfiClient.fetch(
+      getConfig("production"),
+      {} as any,
+      args.connection
+    );
+    set({ mrgnClient: mrgnClient });
+  },
+
+  refetchMrgnClient: async (args) => {
+    set({ mrgnClient: null });
     const mrgnClient = await MarginfiClient.fetch(
       getConfig("production"),
       {} as any,

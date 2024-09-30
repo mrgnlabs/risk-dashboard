@@ -21,11 +21,12 @@ export const FilterComponent = ({
         </button>
       </dropdown.DropdownMenuTrigger>
       <dropdown.DropdownMenuContent>
-        {items.map((item) => (
+        {items.map((item, index) => (
           <dropdown.DropdownMenuItem
             onClick={() => {
               setSelectedFilter(item);
             }}
+            key={index}
           >
             {item}
           </dropdown.DropdownMenuItem>
