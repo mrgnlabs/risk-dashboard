@@ -11,13 +11,14 @@ import { cn } from "~/utils/theme-utils";
 export type IconProps = {
   size?: number;
   className?: string;
+  fill?: string;
 };
 
 const IconMrgn = ({ size = 24, className }: IconProps) => (
   <svg
     width={size}
     height={size}
-    fill="currentColor"
+    fill={"currentColor"}
     viewBox="0 0 75 67"
     xmlns="http://www.w3.org/2000/svg"
     className={className}

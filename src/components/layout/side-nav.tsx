@@ -1,20 +1,11 @@
 "use client";
 import Link from "next/link";
-
 import { type NavItem } from "~/types";
 import { usePathname } from "next/navigation";
 import { cn } from "~/utils/theme-utils";
 import { useSidebar } from "~/hooks/use-sidebar";
 import { buttonVariants } from "~/components/ui/button";
-
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "~/components/layout/subnav-accordion";
 import { useEffect, useState } from "react";
-import { ChevronDownIcon } from "@radix-ui/react-icons";
 
 interface SideNavProps {
   items: NavItem[];
@@ -40,103 +31,43 @@ export function SideNav({ items, setOpen, className }: SideNavProps) {
 
   return (
     <nav className="space-y-2">
-      {items.map((item) =>
-        item.isChidren ? (
-          <Accordion
-            type="single"
-            collapsible
-            className="space-y-2"
-            key={item.title}
-            value={openItem}
-            onValueChange={setOpenItem}
-          >
-            <AccordionItem
-              value={item.title}
-              onMouseOver={(e) => {
-                e.preventDefault();
-              }}
-              className="border-none "
-            >
-              <AccordionTrigger
-                className={cn(
-                  buttonVariants({ variant: "ghost" }),
-                  "group relative flex h-12 justify-between px-4 py-2 text-base duration-200 hover:bg-muted hover:no-underline"
-                )}
-              >
-                <div>
-                  <item.icon className={cn("h-5 w-5", item.color)} />
-                </div>
-                <div
-                  className={cn(
-                    "absolute left-12 text-base duration-200 ",
-                    !isOpen && className
-                  )}
-                >
-                  {item.title}
-                </div>
-
-                {isOpen && (
-                  <ChevronDownIcon className="h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200" />
-                )}
-              </AccordionTrigger>
-              <AccordionContent className="mt-2 space-y-4 pb-1">
-                {item.children?.map((child) => (
-                  <Link
-                    key={child.title}
-                    href={child.href}
-                    onClick={() => {
-                      if (setOpen) setOpen(false);
-                    }}
-                    className={cn(
-                      buttonVariants({ variant: "ghost" }),
-                      "group relative flex h-12 justify-start gap-x-3",
-                      path === child.href &&
-                        "bg-muted font-bold hover:font-normal hover:bg-muted"
-                    )}
-                  >
-                    <child.icon className={cn("h-5 w-5", child.color)} />
-                    <div
-                      className={cn(
-                        "absolute left-12 text-base duration-200",
-                        !isOpen && className
-                      )}
-                    >
-                      {child.title}
-                    </div>
-                  </Link>
-                ))}
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        ) : (
-          <Link
-            key={item.title}
-            href={item.href}
-            onClick={() => {
-              if (setOpen) setOpen(false);
-            }}
+      {items.map((item) => (
+        <Link
+          key={item.title}
+          href={item.href}
+          onClick={() => {
+            if (setOpen) setOpen(false);
+          }}
+          className={cn(
+            buttonVariants({ variant: "ghost" }),
+            "group relative flex h-12 font-normal justify-start items-center transition-colors",
+            "bg-foreground text-black hover:bg-gray-200",
+            "dark:bg-background dark:text-white dark:hover:bg-muted",
+            isOpen &&
+              path === item.href &&
+              "font-bold bg-gray-300 dark:bg-muted"
+          )}
+        >
+          <item.icon
             className={cn(
-              buttonVariants({ variant: "ghost" }),
-              "group relative flex h-12 font-normal justify-start",
-              isOpen &&
-                path === item.href &&
-                "font-bold hover:bg-muted bg-muted"
+              "h-5 w-5 transition-colors",
+              "text-black dark:text-white"
+            )}
+            onMouseOver={(e) => {
+              e.preventDefault();
+            }}
+          />
+          <span
+            className={cn(
+              "absolute left-12 text-base transition-colors",
+              "text-black dark:text-white",
+              !isOpen && className
             )}
           >
-            <item.icon
-              className={cn("h-5 w-5", item.color)}
-              onMouseOver={(e) => {
-                e.preventDefault();
-              }}
-            />
-            <span
-              className={cn("absolute left-12 text-base", !isOpen && className)}
-            >
-              {item.title}
-            </span>
-          </Link>
-        )
-      )}
+            {item.title}
+          </span>
+        </Link>
+      ))}
     </nav>
   );
 }

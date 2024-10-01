@@ -18,7 +18,7 @@ export const SearchComponent = ({
       placeholder={placeHolder}
       value={value}
       onChange={(e) => setValue(e.target.value)}
-      className={`sm:max-w-sm max-w-56 ${className}`}
+      className={`sm:max-w-sm max-w-56 border border-border bg-foreground text-background placeholder-muted-foreground dark:bg-background dark:text-foreground dark:placeholder-muted-foreground transition-colors focus:ring-2 focus:ring-primary focus:border-primary ${className}`}
     />
   );
 };

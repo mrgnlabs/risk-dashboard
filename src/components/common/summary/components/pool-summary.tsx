@@ -1,5 +1,6 @@
 import { numeralFormatter } from "@mrgnlabs/mrgn-common";
 import { BankSummaryValues } from "~/constants/interfaces";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 
 interface PoolSummaryProps {
   poolName: string;
@@ -9,13 +10,10 @@ interface PoolSummaryProps {
 export const PoolSummary = ({ poolName, poolData }: PoolSummaryProps) => {
   return (
     <div className="flex flex-col w-full px-2 sm:px-0 gap-2 items-start justify-center">
-      <h2 className="text-2xl font-medium">{poolName}</h2>
+      <h2 className="text-2xl font-medium text-background dark:text-foreground">
+        {poolName}
+      </h2>
       <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* <PoolItem
-          poolName={"Total number of loans"}
-          poolNumber={poolData?.totalLoans}
-        /> */}
-        {/* TODO: compute total number of loans once cached in the api */}
         <PoolItem
           poolName={"Total deposits (USD)"}
           poolNumber={poolData?.totalDeposits}
@@ -36,29 +34,20 @@ interface PoolItemProps {
 }
 
 const PoolItem = ({ poolName, poolNumber }: PoolItemProps) => {
-  if (poolNumber === undefined) {
-    return <LoadingItem poolName={poolName} />;
-  }
-
   return (
-    <div className="flex flex-col items-start justify-center w-full h-16 gap-1">
-      <h3 className="text-md sm:text-l font-medium overflow-hidden text-ellipsis whitespace-nowrap w-full">
-        {poolName}
-      </h3>
-      <h1 className="text-xl sm:text-2xl font-medium overflow-hidden text-ellipsis whitespace-nowrap w-full">
-        {numeralFormatter(poolNumber)}
-      </h1>
-    </div>
-  );
-};
-
-const LoadingItem = ({ poolName }: { poolName: string }) => {
-  return (
-    <div className="flex flex-col items-start justify-center w-full h-16 gap-1">
-      <h3 className="text-md sm:text-l font-medium overflow-hidden text-ellipsis whitespace-nowrap w-full">
-        {poolName}
-      </h3>
-      <div className="h-[1.75rem] sm:h-[2rem] w-24 bg-muted rounded-md animate-pulse"></div>
-    </div>
+    <Card className="bg-foreground text-background dark:bg-background dark:text-foreground transition-colors">
+      <CardHeader>
+        <CardTitle className="overflow-hidden text-ellipsis whitespace-nowrap text-background dark:text-foreground">
+          {poolName}
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        {poolNumber === undefined ? (
+          <div className="animate-pulse h-6 w-24 bg-muted rounded-md text-muted-foreground" />
+        ) : (
+          <p>{numeralFormatter(poolNumber)}</p>
+        )}
+      </CardContent>
+    </Card>
   );
 };

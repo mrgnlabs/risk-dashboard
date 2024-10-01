@@ -60,18 +60,25 @@ export const Oracles = () => {
   };
 
   React.useEffect(() => {
-    if (!mrgnClient) {
-      const connection = new Connection( // eslint-disable-next-line
-        process.env.NEXT_PUBLIC_MARGINFI_RPC_ENDPOINT!,
-        "confirmed"
-      );
-      fetchMrgnClient({ connection });
-    }
+    const connection = new Connection( // eslint-disable-next-line
+      process.env.NEXT_PUBLIC_MARGINFI_RPC_ENDPOINT!,
+      "confirmed"
+    );
+    fetchMrgnClient({ connection });
+
+    const interval = setInterval(() => {
+      refetchMrgnClient({ connection });
+    }, 30000);
+
+    return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   React.useEffect(() => {
-    if (mrgnClient) fetchData(mrgnClient);
+    if (mrgnClient) {
+      fetchData(mrgnClient);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mrgnClient]);
 
   React.useEffect(() => {
@@ -98,7 +105,11 @@ export const Oracles = () => {
   return (
     <div className="w-full p-3 sm:p-6 flex flex-col gap-4">
       <div className="flex justify-between items-center gap-2">
-        <Button className="w-20" onClick={handleRefresh} disabled={isLoading}>
+        <Button
+          className="w-20 dark:bg-white border-background bg-black text-white dark:text-black transition-colors hover:bg-black/90 hover:text-white"
+          onClick={handleRefresh}
+          disabled={isLoading}
+        >
           {isLoading ? <IconLoader /> : "Refresh"}
         </Button>
         <staleOracleComponents.LiveClock />

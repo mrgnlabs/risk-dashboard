@@ -21,12 +21,15 @@ export const MobileSidebar = () => {
     <>
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
-          <div className="flex items-center justify-center gap-2">
-            <MenuIcon />
+          <div className="flex items-center justify-center gap-2 cursor-pointer text-black bg-white hover:bg-gray-200 dark:text-white dark:bg-gray-900 dark:hover:bg-gray-700 transition-colors py-2 rounded-md">
+            <MenuIcon className="w-6 h-6" /> {/* Consistent icon sizing */}
             <h1 className="text-lg font-semibold">Marginfi risk dashboard</h1>
           </div>
         </SheetTrigger>
-        <SheetContent side="left" className="w-72 outline-none">
+        <SheetContent
+          side="left"
+          className="w-72 outline-none bg-white text-black dark:bg-gray-900 dark:text-white transition-colors"
+        >
           <div className="px-1 py-6 pt-16">
             <SideNav items={NavItems} setOpen={setOpen} />
           </div>

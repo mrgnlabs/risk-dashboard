@@ -23,91 +23,78 @@ export const RiskModel = () => {
   const fetchData = async (mrgnClient: MarginfiClient) => {
     const banks = Array.from(mrgnClient.banks.entries());
 
-    const fetchBankData = async (bank: Bank) => {
-      const tokenSymbol = bank.tokenSymbol;
-      let buyDataObject: healthTableDataType | null = null;
-      let sellDataObject: healthTableDataType | null = null;
+    const fetchBankDataForType = async (
+      bank: Bank,
+      type: "buy" | "sell",
+      configLimit: string
+    ): Promise<healthTableDataType> => {
+      const tokenAddress = bank.mint.toString();
       const oraclePricePerBank = mrgnClient.getOraclePriceByBank(bank.address);
+      let parsedData = null;
 
       try {
-        const buyResponse = await fetch(
-          `/api/getCsvData?tokenSymbol=${tokenSymbol}&type=buy`
+        const response = await fetch(
+          `/api/getCsvData?tokenAddress=${tokenAddress}&type=${type}`
         );
-        if (buyResponse.ok) {
-          const buyData = await buyResponse.json();
-          const parsedBuyData = parseCSVToObject(buyData.data);
 
-          const health = calculateRiskModelHealthFactor({
-            liquidatorCapacity:
-              parsedBuyData["tail_risk_profitability_capacity_native"],
-            dailyDisplaced: parsedBuyData["daily_displaced_at_risk_native"],
-          });
-
-          buyDataObject = {
-            health,
-            type: "Buy",
-            tokenImage: `https://storage.googleapis.com/mrgn-public/mrgn-token-icons/${bank.tokenSymbol}.png`,
-            tokenSymbol: bank.tokenSymbol ?? null,
-            oraclePrice: oraclePricePerBank,
-            liquidatorCapacity:
-              parsedBuyData.tail_risk_profitability_capacity_native,
-            currentBankLimit: bank.config.borrowLimit.toString(),
-            dailyDisplaced: parsedBuyData["daily_displaced_at_risk_native"],
-            target: parsedBuyData.final_target_limit_native,
-          };
-        } else {
-          console.error(`Failed to fetch buy data for ${tokenSymbol}`);
+        if (response.ok) {
+          const data = await response.json();
+          parsedData = parseCSVToObject(data.data);
         }
       } catch (error) {
-        console.error(`Error fetching buy data for ${tokenSymbol}:`, error);
+        // If the fetch fails, parsedData remains null, ensuring an entry is still created
       }
 
-      try {
-        const sellResponse = await fetch(
-          `/api/getCsvData?tokenSymbol=${tokenSymbol}&type=sell`
-        );
-        if (sellResponse.ok) {
-          const sellData = await sellResponse.json();
-          const parsedSellData = parseCSVToObject(sellData.data);
-
-          const health = calculateRiskModelHealthFactor({
+      const health = parsedData
+        ? calculateRiskModelHealthFactor({
             liquidatorCapacity:
-              parsedSellData["tail_risk_profitability_capacity_native"],
-            dailyDisplaced: parsedSellData["daily_displaced_at_risk_native"],
-          });
+              parsedData["tail_risk_profitability_capacity_native"],
+            dailyDisplaced: parsedData["daily_displaced_at_risk_native"],
+          })
+        : undefined;
 
-          sellDataObject = {
-            health,
-            type: "Sell",
-            tokenImage: `https://storage.googleapis.com/mrgn-public/mrgn-token-icons/${bank.tokenSymbol}.png`,
-            tokenSymbol: bank.tokenSymbol ?? null,
-            oraclePrice: oraclePricePerBank,
-            liquidatorCapacity:
-              parsedSellData.tail_risk_profitability_capacity_native,
-            currentBankLimit: bank.config.depositLimit.toString(),
-            dailyDisplaced: parsedSellData.daily_displaced_at_risk_native,
-            target: parsedSellData.final_target_limit_native,
-          };
-        } else {
-          console.error(`Failed to fetch sell data for ${tokenSymbol}`);
-        }
-      } catch (error) {
-        console.error(`Error fetching sell data for ${tokenSymbol}:`, error);
-      }
+      const tvl = bank.computeTvl(oraclePricePerBank!);
 
-      if (buyDataObject) {
-        setData((prevData) => [...prevData, buyDataObject]);
-      }
-      if (sellDataObject) {
-        setData((prevData) => [...prevData, sellDataObject]);
-      }
+      return {
+        health,
+        type: type.charAt(0).toUpperCase() + type.slice(1), // Capitalize "buy" or "sell"
+        tokenImage: `https://storage.googleapis.com/mrgn-public/mrgn-token-icons/${bank.tokenSymbol}.png`,
+        tokenSymbol: bank.tokenSymbol ?? null,
+        oraclePrice: oraclePricePerBank,
+        liquidatorCapacity: parsedData
+          ? parsedData.tail_risk_profitability_capacity_native
+          : null,
+        currentBankLimit: configLimit,
+        dailyDisplaced: parsedData
+          ? parsedData.daily_displaced_at_risk_native
+          : null,
+        target: parsedData ? parsedData.final_target_limit_native : null,
+        tvl: tvl.toNumber(),
+      };
     };
 
-    const fetchPromises = banks.map(
-      ([, bank]) => bank.tokenSymbol && fetchBankData(bank)
+    const fetchBankData = async (bank: Bank) => {
+      const [buyDataObject, sellDataObject] = await Promise.all([
+        fetchBankDataForType(bank, "buy", bank.config.borrowLimit.toString()),
+        fetchBankDataForType(bank, "sell", bank.config.depositLimit.toString()),
+      ]);
+
+      setData((prevData) => [...prevData, buyDataObject, sellDataObject]);
+    };
+
+    await Promise.all(
+      banks.map(([, bank]) => bank.tokenSymbol && fetchBankData(bank))
     );
 
-    await Promise.all(fetchPromises);
+    setData((prevData) =>
+      prevData
+        .sort((a, b) =>
+          a.tokenSymbol && b.tokenSymbol
+            ? a.tokenSymbol.localeCompare(b.tokenSymbol)
+            : 0
+        )
+        .sort((a, b) => b.tvl - a.tvl)
+    );
   };
 
   React.useEffect(() => {
@@ -129,9 +116,21 @@ export const RiskModel = () => {
     let _data = filteredData ?? data;
     if (filterValue === "All") {
       _data = data;
-    } else {
+    } else if (filterValue === "Buy" || filterValue === "Sell") {
       _data = data.filter(
         (item) => item.type.toLowerCase() === filterValue.toLowerCase()
+      );
+    } else if (
+      filterValue === "Healthy" ||
+      filterValue === "Unhealthy" ||
+      filterValue === "Unknown"
+    ) {
+      _data = data.filter((item) =>
+        item.health
+          ? filterValue === "Healthy"
+            ? item.health.isHealthy
+            : filterValue === "Unhealthy" && !item.health.isHealthy
+          : filterValue === "Unknown"
       );
     }
 
@@ -158,7 +157,11 @@ export const RiskModel = () => {
           setSelectedFilter={
             setFilterValue as React.Dispatch<React.SetStateAction<string>>
           }
-          items={["All", "Buy", "Sell"]}
+          items={[
+            ["All"],
+            ["Buy", "Sell"],
+            ["Healthy", "Unhealthy", "Unknown"],
+          ]}
         />
       </div>
       <riskModelComponents.TableComponent

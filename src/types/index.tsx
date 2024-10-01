@@ -15,7 +15,7 @@ export type UIPoolType = "All pools" | "Global pools" | "Isolated pools";
 export type UIRiskModelType = "All" | "Buy" | "Sell";
 
 export type healthTableDataType = {
-  health: HealthCheckResult;
+  health: HealthCheckResult | undefined;
   type: string;
   tokenImage: string;
   tokenSymbol: string | null;
@@ -24,6 +24,7 @@ export type healthTableDataType = {
   currentBankLimit: string | null;
   dailyDisplaced: string | null;
   target: string | null;
+  tvl: number;
 };
 
 export type oracleData = {

@@ -24,9 +24,9 @@ interface TableComponentProps {
 
 export const TableComponent = ({ data }: TableComponentProps) => {
   return (
-    <div className="h-[75vh] relative overflow-auto">
+    <div className="h-[75vh] relative overflow-auto bg-foreground dark:bg-background text-background dark:text-foreground transition-colors">
       <Table className="h-fit max-h-80 overflow-y-auto relative">
-        <TableHeader className="sticky top-0 bg-black">
+        <TableHeader className="sticky hover:bg-foreground dark:hover:bg-background top-0 bg-foreground text-background dark:bg-background dark:text-foreground transition-colors">
           <TableRow>
             <TableHead>Health</TableHead>
             <TableHead>Buy/Sell</TableHead>
@@ -42,27 +42,31 @@ export const TableComponent = ({ data }: TableComponentProps) => {
         <TableBody className="overflow-y-auto max-h-[500px]">
           {data.length > 0 ? (
             data.map((row, index) => (
-              <TableRow key={index}>
+              <TableRow key={index} className=" transition-colors">
                 <TableCell>
-                  {row.health.isHealthy ? (
-                    <span className="text-green-600">Healthy</span>
+                  {row.health ? (
+                    row.health.isHealthy ? (
+                      <span className="text-green-600">Healthy</span>
+                    ) : (
+                      <div className="flex items-center gap-1 text-red-600">
+                        Unhealthy
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger>
+                              <IconInfoCircle
+                                className="text-gray-600 dark:text-gray-300"
+                                size={14}
+                              />
+                            </TooltipTrigger>
+                            <TooltipContent className="bg-foreground text-background dark:bg-background dark:text-foreground">
+                              <p>{row.health.statusMessage}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    )
                   ) : (
-                    <div className="flex items-center gap-1 text-red-600">
-                      Unhealthy
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <IconInfoCircle
-                              className="text-gray-600"
-                              size={14}
-                            />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>{row.health.statusMessage}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
+                    "Unknown"
                   )}
                 </TableCell>
                 <TableCell>
@@ -82,46 +86,32 @@ export const TableComponent = ({ data }: TableComponentProps) => {
                   )}
                 </TableCell>
                 <TableCell>
-                  {numeralFormatter(Number(row.liquidatorCapacity))}
+                  {row.liquidatorCapacity
+                    ? numeralFormatter(Number(row.liquidatorCapacity))
+                    : "..."}
                 </TableCell>
                 <TableCell>
-                  {numeralFormatter(Number(row.currentBankLimit))}
+                  {row.currentBankLimit
+                    ? numeralFormatter(Number(row.currentBankLimit))
+                    : "..."}
                 </TableCell>
                 <TableCell>
-                  {numeralFormatter(Number(row.dailyDisplaced))}
+                  {row.dailyDisplaced
+                    ? numeralFormatter(Number(row.dailyDisplaced))
+                    : "..."}
                 </TableCell>
-                <TableCell>{numeralFormatter(Number(row.target))}</TableCell>
+                <TableCell>
+                  {row.target ? numeralFormatter(Number(row.target)) : "..."}
+                </TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell>
-                <div className="h-4 bg-muted rounded-md animate-pulse w-24	"></div>
-              </TableCell>
-              <TableCell>
-                <div className="h-4 bg-muted rounded-md animate-pulse w-20"></div>
-              </TableCell>
-              <TableCell>
-                <div className="h-4 bg-muted rounded-md animate-pulse w-16"></div>
-              </TableCell>
-              <TableCell>
-                <div className="h-4 bg-muted rounded-md animate-pulse w-24"></div>
-              </TableCell>
-              <TableCell>
-                <div className="h-4 bg-muted rounded-md animate-pulse w-24"></div>
-              </TableCell>
-              <TableCell>
-                <div className="h-4 bg-muted rounded-md animate-pulse w-24"></div>
-              </TableCell>
-              <TableCell>
-                <div className="h-4 bg-muted rounded-md animate-pulse w-24"></div>
-              </TableCell>
-              <TableCell>
-                <div className="h-4 bg-muted rounded-md animate-pulse w-24"></div>
-              </TableCell>
-              <TableCell>
-                <div className="h-4 bg-muted rounded-md animate-pulse w-24"></div>
-              </TableCell>
+              {Array.from({ length: 9 }).map((_, index) => (
+                <TableCell key={index}>
+                  <div className="h-4 bg-muted rounded-md animate-pulse w-24 dark:bg-muted transition-colors"></div>
+                </TableCell>
+              ))}
             </TableRow>
           )}
         </TableBody>

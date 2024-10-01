@@ -18,5 +18,7 @@ export const LiveClock: React.FC = () => {
     return () => clearInterval(intervalId);
   }, []);
 
-  return <div className="text-2xl">{currentTime}</div>;
+  return (
+    <div className="text-2xl dark:text-white text-black">{currentTime}</div>
+  );
 };

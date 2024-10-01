@@ -51,8 +51,8 @@ export const Summary = () => {
   }, [mrgnClient]);
 
   return (
-    <div className="flex flex-col items-center w-full p-2 sm:py-4 sm:px-6 gap-3">
-      <div className="flex justify-between items-center w-full gap-2 ">
+    <div className="flex flex-col items-center w-full p-2 sm:py-4 sm:px-6 gap-3 text-black dark:text-white transition-colors">
+      <div className="flex justify-between items-center w-full gap-2">
         <h1 className="text-4xl font-medium">Summary</h1>
         <globalComponents.FilterComponent
           setSelectedFilter={
@@ -62,7 +62,7 @@ export const Summary = () => {
           items={["All pools", "Global pools", "Isolated pools"]}
         />
       </div>
-      <Separator />
+      <Separator className="border-gray-300 dark:border-gray-700" />
       <div className="w-full gap-6 flex flex-col items-center justify-center">
         {selectedPool === "All pools" && (
           <>
@@ -70,7 +70,7 @@ export const Summary = () => {
               poolName="Global pools"
               poolData={collateralBanksValues!}
             />
-            <Separator />
+            <Separator className="border-gray-300 dark:border-gray-700" />
 
             <summaryComponents.PoolSummary
               poolName="Isolated pools"

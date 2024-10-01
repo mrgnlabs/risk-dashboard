@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const tokenSymbol = searchParams.get("tokenSymbol");
+  const tokenAddress = searchParams.get("tokenAddress");
   const type = searchParams.get("type");
 
-  if (!tokenSymbol || !type) {
+  if (!tokenAddress || !type) {
     return NextResponse.json(
       { error: "Missing tokenSymbol or type query parameters" },
       { status: 400 }
@@ -13,7 +13,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const fileUrl = `https://storage.googleapis.com/mrgn-public/risk-model-output/${tokenSymbol}-${type}-model-output.csv`;
+    const fileUrl = `https://storage.googleapis.com/mrgn-public/risk/${tokenAddress}-${type}-model_output.csv`;
     const response = await fetch(fileUrl);
 
     if (response.ok) {
@@ -30,19 +30,14 @@ export async function GET(request: Request) {
         }
       );
     } else if (response.status === 404) {
-      console.error(`File not found on Google Cloud Storage: ${fileUrl}`);
       return NextResponse.json({ error: "File not found" }, { status: 404 });
     } else {
-      console.error(
-        `Failed to fetch file from Google Cloud Storage: ${fileUrl}`
-      );
       return NextResponse.json(
         { error: "Failed to fetch file from Google Cloud Storage" },
         { status: response.status }
       );
     }
   } catch (error) {
-    console.error("Error fetching CSV file:", error);
     return NextResponse.json(
       { error: "Internal server error" },
       { status: 500 }
