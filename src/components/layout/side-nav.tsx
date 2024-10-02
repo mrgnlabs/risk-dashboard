@@ -41,8 +41,8 @@ export function SideNav({ items, setOpen, className }: SideNavProps) {
           className={cn(
             buttonVariants({ variant: "ghost" }),
             "group relative flex h-12 font-normal justify-start items-center transition-colors",
-            "bg-foreground text-black hover:bg-gray-200",
-            "dark:bg-background dark:text-white dark:hover:bg-muted",
+            // Adjust for light/dark mode
+            "bg-foreground text-background hover:bg-gray-200 dark:bg-background dark:text-foreground dark:hover:bg-muted",
             isOpen &&
               path === item.href &&
               "font-bold bg-gray-300 dark:bg-muted"
@@ -51,7 +51,7 @@ export function SideNav({ items, setOpen, className }: SideNavProps) {
           <item.icon
             className={cn(
               "h-5 w-5 transition-colors",
-              "text-black dark:text-white"
+              "text-background dark:text-foreground"
             )}
             onMouseOver={(e) => {
               e.preventDefault();
@@ -60,8 +60,9 @@ export function SideNav({ items, setOpen, className }: SideNavProps) {
           <span
             className={cn(
               "absolute left-12 text-base transition-colors",
-              "text-black dark:text-white",
-              !isOpen && className
+              "text-background dark:text-foreground",
+              !isOpen && className,
+              " dark:bg-muted bg-gray-200 text-background dark:text-foreground"
             )}
           >
             {item.title}

@@ -25,7 +25,7 @@ const calculateTotals = (
     const totalDepositsQuantity = bank.getTotalAssetQuantity().toNumber();
     const totalBorrowsQuantity = bank.getTotalLiabilityQuantity().toNumber();
 
-    totalTvl += tvlPerBank * realTimePrice;
+    totalTvl += tvlPerBank;
     totalDeposits +=
       nativeToUi(totalDepositsQuantity, bank.mintDecimals) * realTimePrice;
     totalBorrows +=
