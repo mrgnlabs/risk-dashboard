@@ -10,6 +10,7 @@ import {
   calculateRiskModelHealthFactor,
   parseCSVToObject,
 } from "~/utils/general-utils";
+import { nativeToUi } from "@mrgnlabs/mrgn-common";
 
 export const RiskModel = () => {
   const [searchValue, setSearchValue] = React.useState<string | undefined>();
@@ -47,9 +48,8 @@ export const RiskModel = () => {
 
       const health = parsedData
         ? calculateRiskModelHealthFactor({
-            liquidatorCapacity:
-              parsedData["tail_risk_profitability_capacity_native"],
-            dailyDisplaced: parsedData["daily_displaced_at_risk_native"],
+            liquidatorCapacity: parsedData.daily_liquidator_capacity_native,
+            dailyDisplaced: parsedData.daily_displaced_at_risk_native,
           })
         : undefined;
 
@@ -62,7 +62,7 @@ export const RiskModel = () => {
         tokenSymbol: bank.tokenSymbol ?? null,
         oraclePrice: oraclePricePerBank,
         liquidatorCapacity: parsedData
-          ? parsedData.tail_risk_profitability_capacity_native
+          ? parsedData.daily_liquidator_capacity_native
           : null,
         currentBankLimit: configLimit,
         dailyDisplaced: parsedData
@@ -75,8 +75,22 @@ export const RiskModel = () => {
 
     const fetchBankData = async (bank: Bank) => {
       const [buyDataObject, sellDataObject] = await Promise.all([
-        fetchBankDataForType(bank, "buy", bank.config.borrowLimit.toString()),
-        fetchBankDataForType(bank, "sell", bank.config.depositLimit.toString()),
+        fetchBankDataForType(
+          bank,
+          "buy",
+          nativeToUi(
+            bank.config.borrowLimit.toString(),
+            bank.mintDecimals
+          ).toString()
+        ),
+        fetchBankDataForType(
+          bank,
+          "sell",
+          nativeToUi(
+            bank.config.depositLimit.toString(),
+            bank.mintDecimals
+          ).toString()
+        ),
       ]);
 
       setData((prevData) => [...prevData, buyDataObject, sellDataObject]);
